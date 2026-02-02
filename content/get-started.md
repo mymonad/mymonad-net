@@ -7,10 +7,10 @@ description: "Install and run MyMonad - privacy-preserving compatibility matchin
 
 Before installing MyMonad, ensure you have:
 
-- **Rust 1.75+** — [Install Rust](https://rustup.rs/)
-- **OpenSSL 3.x** — Required for cryptographic operations
+- **Go 1.21+** — [Download Go](https://golang.org/dl/)
+- **Ollama** — [Install Ollama](https://ollama.ai) for local embedding generation
+- **Make** (optional) — For convenience build commands
 - **4GB RAM minimum** — Embedding generation requires memory
-- **Linux/macOS** — Windows support via WSL2
 
 ---
 
@@ -18,42 +18,57 @@ Before installing MyMonad, ensure you have:
 
 Get your monad running in 5 steps:
 
-### Step 1: Clone the Repository
+### Step 1: Install Ollama and Pull Model
+
+```bash
+# Install Ollama (see https://ollama.ai for your platform)
+# Then pull the embedding model
+ollama pull nomic-embed-text
+```
+
+### Step 2: Clone and Build
 
 ```bash
 git clone https://github.com/mymonad/mymonad.git
 cd mymonad
+make build
 ```
 
-### Step 2: Build the Project
+This creates three binaries in `./bin/`:
+- `mymonad-ingest` — Data processing daemon
+- `mymonad-agent` — P2P network daemon
+- `mymonad-cli` — Command-line interface
+
+### Step 3: Start the Ingest Daemon
 
 ```bash
-cargo build --release
+# Watch directories for documents to process
+./bin/mymonad-ingest --watch-dirs ~/Documents
 ```
 
-### Step 3: Initialize Your Monad
+This daemon watches for file changes and generates your Monad embedding vector locally.
+
+### Step 4: Start the Agent Daemon
+
+In another terminal:
 
 ```bash
-./target/release/mymonad init
+./bin/mymonad-agent
 ```
 
-This creates your cryptographic identity and configuration files in `~/.mymonad/`.
+Your agent is now live on the P2P network, discovering compatible peers.
 
-### Step 4: Configure Your Profile
-
-Edit `~/.mymonad/ingest.toml` with your data sources (see Configuration below).
-
-### Step 5: Start the Agent
+### Step 5: Check Status
 
 ```bash
-./target/release/mymonad agent start
+./bin/mymonad-cli status
 ```
-
-Your monad is now live on the network.
 
 ---
 
 ## Configuration
+
+Configuration files are stored in `~/.config/mymonad/`.
 
 ### ingest.toml
 
@@ -61,25 +76,19 @@ Controls how your data is transformed into embeddings:
 
 ```toml
 [sources]
-# Text-based profile data
-profile_text = "~/.mymonad/profile.txt"
-
-# Structured preferences
-preferences = "~/.mymonad/preferences.json"
+# Directories to watch for documents
+watch_dirs = ["~/Documents", "~/Notes"]
 
 [embedding]
-# Model for text embedding
-model = "local-minilm"
+# Ollama model for embeddings
+model = "nomic-embed-text"
 
-# Embedding dimensions
-dimensions = 384
+# Embedding dimensions (768 for nomic-embed-text)
+dimensions = 768
 
 [privacy]
 # Differential privacy noise level
 epsilon = 1.0
-
-# Minimum k-anonymity
-k_anonymity = 5
 ```
 
 ### agent.toml
@@ -107,9 +116,6 @@ max_handshakes = 10
 [handshake]
 # Timeout for each handshake stage (seconds)
 stage_timeout = 30
-
-# Proof verification strictness
-strict_verification = true
 ```
 
 ---
@@ -118,15 +124,24 @@ strict_verification = true
 
 | Command | Description |
 |---------|-------------|
-| `mymonad init` | Initialize a new monad identity |
-| `mymonad agent start` | Start the agent daemon |
-| `mymonad agent stop` | Stop the agent daemon |
-| `mymonad agent status` | Check agent status and connections |
-| `mymonad ingest` | Re-process data sources into embeddings |
-| `mymonad matches` | List successful handshakes |
-| `mymonad channels` | Manage secure communication channels |
-| `mymonad keys export` | Export your cryptographic keys |
-| `mymonad keys import` | Import keys from backup |
+| `mymonad-cli status` | Check agent status and connections |
+| `mymonad-cli matches` | List successful handshakes |
+| `mymonad-cli channels` | Manage secure communication channels |
+| `mymonad-cli keys export` | Export your cryptographic keys |
+| `mymonad-cli keys import` | Import keys from backup |
+
+---
+
+## Directory Structure
+
+After running, MyMonad creates:
+
+| Path | Description |
+|------|-------------|
+| `~/.config/mymonad/` | Configuration files |
+| `~/.local/share/mymonad/` | Data directory |
+| `~/.local/share/mymonad/identity.key` | Encrypted identity |
+| `~/.local/share/mymonad/monad.bin` | Your Monad vector |
 
 ---
 
@@ -142,16 +157,21 @@ Your monad is running. Now what?
 
 ## Troubleshooting
 
+**Ollama connection refused?**
+```bash
+# Ensure Ollama is running
+ollama serve
+
+# Verify model is available
+ollama list
+```
+
 **Agent won't start?**
 - Check if port 4001 is available: `lsof -i :4001`
-- Verify OpenSSL version: `openssl version`
+- Remove stale sockets: `rm ~/.local/share/mymonad/*.sock`
 
 **No matches appearing?**
-- Confirm your embedding was generated: `mymonad agent status`
+- Confirm your embedding was generated: `mymonad-cli status`
 - Check threshold isn't too high in `agent.toml`
 
-**Handshakes timing out?**
-- Increase `stage_timeout` in `agent.toml`
-- Verify network connectivity to bootstrap nodes
-
-For more help, open an issue on GitHub.
+For more help, [open an issue on GitHub](https://github.com/mymonad/mymonad/issues).
