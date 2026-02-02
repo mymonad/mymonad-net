@@ -1,0 +1,28 @@
+baseURL = 'https://mymonad.net/'
+languageCode = 'en-us'
+title = 'MyMonad - Privacy-Preserving Compatibility Protocol'
+
+[params]
+  description = 'Decentralized P2P matchmaking protocol for autonomous agents. Discover compatibility without revealing anything.'
+  repository = 'https://github.com/mymonad/mymonad'
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = 'monokailight'
+    lineNos = false
+    noClasses = false
+
+[outputs]
+  home = ['HTML']
+  section = ['HTML']
+  page = ['HTML']
+
+[sitemap]
+  changefreq = 'weekly'
+  priority = 0.5
+
+[permalinks]
+  blog = '/blog/:year/:month/:slug/'
