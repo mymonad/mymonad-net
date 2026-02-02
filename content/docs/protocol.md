@@ -30,15 +30,15 @@ Two agents that discover potential compatibility (via LSH bucket matching) initi
 **Purpose:** Confirm actual similarity exceeds threshold.
 
 **Protocol:**
-1. Both parties send encrypted vectors to TEE relay
-2. TEE computes cosine similarity
-3. TEE returns boolean: similarity >= t (threshold)
-4. If false, handshake terminates
+1. Both parties exchange serialized Monad vectors
+2. Each computes cosine similarity locally
+3. If similarity < threshold, handshake terminates
+4. Only boolean result (match/no-match) determines progression
 
 **Privacy:**
-- Raw vectors never exposed to peer
-- Only binary match/no-match result revealed
+- Vectors exchanged only after attestation passes
 - Threshold t configurable (default: 0.85)
+- Failed matches reveal nothing about why
 
 ## Stage 3: Deal Breakers
 
@@ -60,7 +60,7 @@ Two agents that discover potential compatibility (via LSH bucket matching) initi
 **Purpose:** Optional direct conversation before unmasking.
 
 **Protocol:**
-1. End-to-end encrypted messaging
+1. End-to-end encrypted messaging via X25519 key exchange
 2. No identity revealed
 3. Either party can proceed to unmask or terminate
 
@@ -97,12 +97,31 @@ Any stage can transition to `FAILED` if requirements not met.
 
 | Message | Stage | Direction |
 |---------|-------|-----------|
-| `AttestationRequest` | 1 | I->R |
-| `AttestationResponse` | 1 | R->I |
+| `AttestationRequest` | 1 | I→R |
+| `AttestationResponse` | 1 | R→I |
 | `VectorMatchRequest` | 2 | Both |
-| `VectorMatchResult` | 2 | TEE->Both |
+| `VectorMatchResult` | 2 | Both |
 | `DealBreakerQuestions` | 3 | Both |
 | `DealBreakerAnswers` | 3 | Both |
 | `ChatMessage` | 4 | Both |
 | `UnmaskRequest` | 5 | Both |
 | `IdentityReveal` | 5 | Both |
+
+## Cryptographic Details
+
+### Attestation (Hashcash)
+
+```
+challenge = SHA256(nonce || peer_id || timestamp)
+proof = find_nonce where SHA256(challenge || proof) has N leading zeros
+```
+
+Default difficulty: 16 bits (adjustable via config)
+
+### Vector Exchange
+
+Vectors are serialized as little-endian float32 arrays and transmitted after attestation. Each party computes cosine similarity independently.
+
+### Key Exchange (Stage 4+)
+
+X25519 ephemeral keys generated per handshake. Shared secret derived via Diffie-Hellman, then used with AES-256-GCM for message encryption.

@@ -9,29 +9,33 @@ MyMonad operates through three fundamental phases, each designed to preserve you
 
 ### 1. Ingest
 
-Your personal data never leaves your device in raw form. The ingest phase transforms your information into privacy-preserving embeddings:
+Your personal data never leaves your device in raw form. The ingest daemon transforms your information into privacy-preserving embeddings:
 
-- **Local Processing**: All data transformation happens on your hardware
-- **Embedding Generation**: Text, preferences, and attributes become high-dimensional vectors
-- **Zero Knowledge**: The original data cannot be reconstructed from embeddings
+- **Local Processing**: All data transformation happens on your hardware using Ollama
+- **Embedding Generation**: Text documents become 768-dimensional vectors via `nomic-embed-text`
+- **Running Average**: Your Monad vector updates incrementally as you add documents
+- **Encrypted Storage**: The final vector is stored locally in `~/.local/share/mymonad/monad.bin`
 
 ### 2. Discovery
 
-Encrypted embeddings enter the network to find compatible monads:
+Your agent joins the P2P network to find compatible peers:
 
-- **Secure Broadcast**: Your encrypted profile propagates through the mesh
-- **Cosine Similarity**: Mathematical compatibility scores computed on encrypted data
-- **Threshold Matching**: Only scores above your defined threshold trigger the next phase
+- **Kademlia DHT**: Decentralized peer discovery via libp2p
+- **mDNS**: Local network discovery for nearby peers
+- **LSH Buckets**: Locality Sensitive Hashing enables O(log n) similarity search
+- **Threshold Matching**: Only peers above your similarity threshold trigger handshakes
 
 ### 3. Handshake
 
-When mutual compatibility is detected, the handshake protocol initiates:
+When mutual compatibility is detected, the 5-stage handshake protocol initiates:
 
-- **Stage 1**: Exchange of commitment hashes
-- **Stage 2**: Zero-knowledge proof of compatibility
-- **Stage 3**: Mutual verification of proofs
-- **Stage 4**: Key exchange for secure channel
-- **Stage 5**: Channel establishment and metadata exchange
+- **Stage 1: Attestation** - Hashcash proof-of-work verifies peer is legitimate (anti-spam)
+- **Stage 2: Vector Match** - Cosine similarity computed, boolean result only (match/no match)
+- **Stage 3: Deal Breakers** - Exchange yes/no compatibility questions
+- **Stage 4: Human Chat** - Optional encrypted conversation before reveal
+- **Stage 5: Unmask** - Mutual consent required to reveal identities
+
+Each stage must pass before proceeding. Failure at any point terminates the handshake without data leakage.
 
 ---
 
@@ -41,38 +45,48 @@ MyMonad's security rests on battle-tested cryptographic primitives:
 
 | Component | Purpose |
 |-----------|---------|
-| **Homomorphic Encryption** | Compute on encrypted embeddings without decryption |
-| **Zero-Knowledge Proofs** | Prove compatibility without revealing underlying data |
-| **Commitment Schemes** | Bind to values before revelation |
-| **Key Derivation** | Generate session keys from handshake material |
+| **Ed25519** | Digital signatures and identity verification |
+| **X25519** | Diffie-Hellman key exchange for secure channels |
+| **Argon2id** | Key derivation from passwords |
+| **AES-256-GCM** | Authenticated encryption for data at rest |
+| **Hashcash** | Proof-of-work for spam prevention |
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        Your Device                          │
-│  ┌─────────┐    ┌─────────────┐    ┌──────────────────┐    │
-│  │  Data   │───▶│   Ingest    │───▶│  Encrypted       │    │
-│  │ Sources │    │   Engine    │    │  Embeddings      │    │
-│  └─────────┘    └─────────────┘    └────────┬─────────┘    │
-│                                              │              │
-│  ┌─────────────────────────────────────────▼─────────┐    │
-│  │                    Agent                           │    │
-│  │  ┌───────────┐  ┌────────────┐  ┌──────────────┐  │    │
-│  │  │ Discovery │  │ Handshake  │  │   Channel    │  │    │
-│  │  │  Module   │  │  Protocol  │  │   Manager    │  │    │
-│  │  └───────────┘  └────────────┘  └──────────────┘  │    │
-│  └───────────────────────┬───────────────────────────┘    │
-└──────────────────────────┼──────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                        Your Device                              │
+│  ┌─────────┐    ┌─────────────┐    ┌──────────────────┐        │
+│  │  Data   │───▶│  mymonad-   │───▶│  Monad Vector    │        │
+│  │ Sources │    │  ingest     │    │  (768-dim)       │        │
+│  └─────────┘    └─────────────┘    └────────┬─────────┘        │
+│                                              │                  │
+│  ┌───────────────────────────────────────────▼─────────────┐   │
+│  │                   mymonad-agent                          │   │
+│  │  ┌───────────┐  ┌────────────┐  ┌──────────────────┐    │   │
+│  │  │ Discovery │  │ Handshake  │  │   Peer Manager   │    │   │
+│  │  │  (DHT)    │  │    FSM     │  │                  │    │   │
+│  │  └───────────┘  └────────────┘  └──────────────────┘    │   │
+│  └───────────────────────┬─────────────────────────────────┘   │
+└──────────────────────────┼──────────────────────────────────────┘
                            │
                            ▼
               ┌────────────────────────┐
               │    P2P Mesh Network    │
-              │  (Encrypted Traffic)   │
+              │  (libp2p / Kademlia)   │
               └────────────────────────┘
 ```
+
+---
+
+## Privacy Guarantees
+
+- **Raw vectors never transmitted**: Only similarity scores cross the network
+- **LSH reveals only coarse similarity**: Bucket membership, not exact vectors
+- **Handshake can fail safely**: No data leakage on early termination
+- **No central servers**: Pure P2P, no single point of surveillance
 
 ---
 
@@ -83,9 +97,9 @@ Traditional matching systems require you to surrender your data to centralized s
 MyMonad inverts this model:
 
 - **Your data stays local**: Servers never see raw information
-- **Computation is distributed**: No single point of failure or surveillance
-- **Math replaces trust**: Cryptographic proofs, not corporate promises
-- **You control the keys**: Lose them and your monad is gone—true ownership
+- **Computation is distributed**: No single point of failure
+- **Math replaces trust**: Cryptographic verification, not corporate promises
+- **You control the keys**: True ownership means true responsibility
 
 ---
 

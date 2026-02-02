@@ -14,17 +14,17 @@ Traditional approaches force a difficult tradeoff. Either users must reveal ever
 
 ## Our Solution
 
-MyMonad takes a different approach. Using advanced cryptographic techniques, we enable rich compatibility matching while keeping your actual preferences private.
+MyMonad takes a different approach. Using local AI processing and cryptographic verification, we enable rich compatibility matching while keeping your actual preferences private.
 
 Here's how it works:
 
-1. **Local-First Processing**: Your preferences and traits are processed locally on your device. Raw data never leaves your control.
+1. **Local-First Processing**: Your preferences and traits are transformed into embedding vectors locally on your device using Ollama. Raw data never leaves your control.
 
-2. **Homomorphic Encryption**: Compatibility calculations happen on encrypted data. Even the servers facilitating connections can't see what's being compared.
+2. **LSH-Based Discovery**: Locality Sensitive Hashing enables privacy-preserving similarity search. Peers discover potential matches without revealing exact vectors.
 
-3. **Zero-Knowledge Proofs**: When a match is found, cryptographic proofs verify compatibility without revealing the underlying details.
+3. **5-Stage Handshake**: A progressive trust protocol that reveals information only as both parties confirm compatibility. Attestation, vector matching, deal-breakers, optional chat, then mutual unmasking.
 
-4. **Decentralized Architecture**: No single entity controls the network. Nodes communicate peer-to-peer, with no central point of failure or surveillance.
+4. **Decentralized Architecture**: No single entity controls the network. Nodes communicate peer-to-peer via libp2p and Kademlia DHT, with no central point of failure or surveillance.
 
 ## Get Started
 
@@ -39,11 +39,11 @@ MyMonad is open source and available today. You can:
 
 This is just the beginning. Our roadmap includes:
 
-- Mobile SDKs for iOS and Android
-- Additional matching algorithms for specialized use cases
+- Mobile companion apps
+- Additional embedding models for specialized use cases
 - Enhanced network resilience features
 - Formal security audits
 
 We believe privacy-preserving technology should be the default, not the exception. MyMonad is our contribution toward that future.
 
-Join us on [GitHub](https://github.com/mymonad) to contribute, report issues, or just follow along.
+Join us on [GitHub](https://github.com/mymonad/mymonad) to contribute, report issues, or just follow along.

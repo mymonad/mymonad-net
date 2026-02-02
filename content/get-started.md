@@ -75,20 +75,18 @@ Configuration files are stored in `~/.config/mymonad/`.
 Controls how your data is transformed into embeddings:
 
 ```toml
-[sources]
-# Directories to watch for documents
-watch_dirs = ["~/Documents", "~/Notes"]
+[watch]
+directories = ["~/Documents", "~/Notes"]
+extensions = [".txt", ".md"]
+ignore_hidden = true
 
-[embedding]
-# Ollama model for embeddings
+[ollama]
+url = "http://localhost:11434"
 model = "nomic-embed-text"
+timeout_seconds = 30
 
-# Embedding dimensions (768 for nomic-embed-text)
-dimensions = 768
-
-[privacy]
-# Differential privacy noise level
-epsilon = 1.0
+[storage]
+monad_path = "~/.local/share/mymonad/monad.bin"
 ```
 
 ### agent.toml
@@ -97,25 +95,21 @@ Controls network behavior and matching parameters:
 
 ```toml
 [network]
-# Bootstrap nodes for mesh discovery
-bootstrap = [
-    "/dns4/node1.mymonad.net/tcp/4001",
-    "/dns4/node2.mymonad.net/tcp/4001"
-]
+port = 4001
+# external_ip = "203.0.113.50"  # Uncomment if behind NAT
 
-# Listen address
-listen = "/ip4/0.0.0.0/tcp/4001"
+[discovery]
+dns_seeds = []  # DNSADDR records for bootstrap
+bootstrap = []  # Static multiaddrs: ["/ip4/1.2.3.4/tcp/4001/p2p/12D3KooW..."]
+mdns_enabled = true
 
-[matching]
-# Minimum cosine similarity to trigger handshake
-threshold = 0.75
+[protocol]
+similarity_threshold = 0.85  # Minimum cosine similarity for match (0.0-1.0)
+challenge_difficulty = 16    # Hashcash proof-of-work bits
 
-# Maximum concurrent handshakes
-max_handshakes = 10
-
-[handshake]
-# Timeout for each handshake stage (seconds)
-stage_timeout = 30
+[storage]
+identity_path = "~/.local/share/mymonad/identity.key"
+peers_cache = "~/.local/share/mymonad/peers.json"
 ```
 
 ---

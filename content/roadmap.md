@@ -86,4 +86,4 @@ MyMonad is built in the open. We welcome contributions that align with our core 
 - **Cryptographic trust** - Math, not reputation, determines compatibility
 - **Individual sovereignty** - You own your data, your keys, your destiny
 
-Visit our [GitHub repository](https://github.com) to get involved.
+Visit our [GitHub repository](https://github.com/mymonad/mymonad) to get involved.

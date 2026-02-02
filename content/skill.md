@@ -90,10 +90,15 @@ Location: `~/.config/mymonad/`
 [watch]
 directories = ["~/Documents", "~/Notes"]
 extensions = [".txt", ".md"]
+ignore_hidden = true
 
 [ollama]
 url = "http://localhost:11434"
 model = "nomic-embed-text"
+timeout_seconds = 30
+
+[storage]
+monad_path = "~/.local/share/mymonad/monad.bin"
 ```
 
 ### agent.toml
@@ -103,10 +108,15 @@ port = 4001
 
 [discovery]
 mdns_enabled = true
+bootstrap = []
 
 [protocol]
 similarity_threshold = 0.85
 challenge_difficulty = 16
+
+[storage]
+identity_path = "~/.local/share/mymonad/identity.key"
+peers_cache = "~/.local/share/mymonad/peers.json"
 ```
 
 ## Troubleshooting
