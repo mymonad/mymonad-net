@@ -1,49 +1,65 @@
 ---
 title: "Introducing MyMonad"
 date: 2026-02-02
-description: "Announcing MyMonad - a privacy-preserving P2P compatibility protocol"
+description: "Announcing MyMonad - a privacy-preserving P2P protocol for agent alignment verification"
 ---
 
-Today we're excited to announce MyMonad, a new approach to peer-to-peer compatibility that puts privacy first.
+Today we're announcing MyMonad, a protocol that lets autonomous agents verify alignment without revealing underlying data.
 
 ## The Problem
 
-Modern applications increasingly require users to share personal information to enable matching and compatibility features. Dating apps, professional networking platforms, and social discovery tools all face the same fundamental challenge: how do you help people find compatible matches without exposing sensitive preferences and traits?
+As AI agents increasingly act on our behalf, they face a fundamental challenge: **how do two agents determine if their principals are aligned on some dimension, without exposing sensitive information?**
 
-Traditional approaches force a difficult tradeoff. Either users must reveal everything to a central server that performs matching, or they're limited to basic filtering that misses deeper compatibility signals. Neither option respects user autonomy or privacy.
+This problem appears across many verticals:
+
+- **Social**: Is this person compatible with my human for friendship, dating, or collaboration?
+- **Professional**: Does this candidate/company/investor align with my principal's values and goals?
+- **Commercial**: Is this vendor/partner a good fit without revealing proprietary requirements?
+- **Research**: Are these researchers working on complementary problems without exposing unpublished work?
+
+The common thread: agents need to find aligned peers and verify compatibility, but the data underlying that alignment is private. Traditional approaches force a choice between functionality (share everything with a central matcher) and privacy (reveal nothing, match on nothing).
 
 ## Our Solution
 
-MyMonad takes a different approach. Using local AI processing and cryptographic verification, we enable rich compatibility matching while keeping your actual preferences private.
+MyMonad enables agents to verify alignment through cryptographic negotiation. No central authority sees the data. No peer sees more than necessary.
 
-Here's how it works:
+The protocol:
 
-1. **Local-First Processing**: Your preferences and traits are transformed into embedding vectors locally on your device using Ollama. Raw data never leaves your control.
+1. **Local Embedding**: Each agent transforms its principal's data into a high-dimensional vector locally. Raw data never leaves the device.
 
-2. **LSH-Based Discovery**: Locality Sensitive Hashing enables privacy-preserving similarity search. Peers discover potential matches without revealing exact vectors.
+2. **Privacy-Preserving Discovery**: Locality Sensitive Hashing enables agents to find potentially aligned peers without revealing exact vectors.
 
-3. **5-Stage Handshake**: A progressive trust protocol that reveals information only as both parties confirm compatibility. Attestation, vector matching, deal-breakers, optional chat, then mutual unmasking.
+3. **Progressive Trust Handshake**: A 5-stage protocol where agents reveal information incrementally—attestation, similarity verification, deal-breakers, optional dialogue, then mutual unmasking. Failure at any stage terminates cleanly.
 
-4. **Decentralized Architecture**: No single entity controls the network. Nodes communicate peer-to-peer via libp2p and Kademlia DHT, with no central point of failure or surveillance.
+4. **Decentralized Network**: Pure P2P via libp2p and Kademlia DHT. No servers to trust, breach, or shut down.
+
+## Why Agents?
+
+The protocol is designed for agent-to-agent communication. Your agent:
+
+- Knows your preferences (from local data you provide)
+- Negotiates on your behalf (following the handshake protocol)
+- Reveals nothing without cryptographic verification
+- Acts only with mutual consent
+
+You define what alignment means for your vertical. The protocol handles the verification.
 
 ## Get Started
 
-MyMonad is open source and available today. You can:
+MyMonad is open source and available now:
 
-- Read our [manifesto](/manifesto/) to understand our philosophy
-- Explore [how it works](/how-it-works/) for technical details
-- Follow the [getting started guide](/get-started/) to run your own node
-- Browse the [documentation](/docs/) for comprehensive reference
+- [Manifesto](/manifesto/) — The philosophy of windowless monads
+- [How It Works](/how-it-works/) — Technical deep dive
+- [Get Started](/get-started/) — Run your own agent
+- [Documentation](/docs/) — Complete reference
 
 ## What's Next
 
-This is just the beginning. Our roadmap includes:
-
+- Additional embedding models for domain-specific alignment
 - Mobile companion apps
-- Additional embedding models for specialized use cases
-- Enhanced network resilience features
 - Formal security audits
+- Community-driven vertical implementations
 
-We believe privacy-preserving technology should be the default, not the exception. MyMonad is our contribution toward that future.
+The protocol is open. The applications are yours to build.
 
-Join us on [GitHub](https://github.com/mymonad/mymonad) to contribute, report issues, or just follow along.
+[GitHub](https://github.com/mymonad/mymonad)
