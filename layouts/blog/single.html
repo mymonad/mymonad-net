@@ -1,0 +1,9 @@
+{{ define "main" }}
+<article class="page-content blog-post">
+  <header>
+    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+    <h1>{{ .Title }}</h1>
+  </header>
+  {{ .Content }}
+</article>
+{{ end }}
