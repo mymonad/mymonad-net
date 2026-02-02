@@ -26,3 +26,21 @@ title = 'MyMonad - Privacy-Preserving Compatibility Protocol'
 
 [permalinks]
   blog = '/blog/:year/:month/:slug/'
+
+[menus]
+  [[menus.docs]]
+    name = 'Overview'
+    url = '/docs/overview/'
+    weight = 1
+  [[menus.docs]]
+    name = 'Protocol'
+    url = '/docs/protocol/'
+    weight = 2
+  [[menus.docs]]
+    name = 'Installation'
+    url = '/docs/installation/'
+    weight = 3
+  [[menus.docs]]
+    name = 'CLI Reference'
+    url = '/docs/cli/'
+    weight = 4

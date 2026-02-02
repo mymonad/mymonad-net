@@ -1,0 +1,28 @@
+{{ define "main" }}
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <nav aria-label="Documentation navigation">
+      <ul class="docs-nav">
+        {{ range .Site.Menus.docs }}
+        <li>
+          <a href="{{ .URL }}"{{ if eq $.RelPermalink .URL }} aria-current="page"{{ end }}>
+            {{ .Name }}
+          </a>
+        </li>
+        {{ end }}
+      </ul>
+    </nav>
+  </aside>
+  <div class="docs-content">
+    <h1>{{ .Title }}</h1>
+    {{ .Content }}
+
+    <h2>Documentation</h2>
+    <ul>
+      {{ range .Pages }}
+      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a> - {{ .Description }}</li>
+      {{ end }}
+    </ul>
+  </div>
+</div>
+{{ end }}
