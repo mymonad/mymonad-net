@@ -27,6 +27,12 @@ title = 'MyMonad - Privacy-Preserving Compatibility Protocol'
 [permalinks]
   blog = '/blog/:year/:month/:slug/'
 
+[outputFormats]
+  [outputFormats.skill]
+    baseName = "skill"
+    isPlainText = true
+    mediaType = "text/markdown"
+
 [menus]
   [[menus.docs]]
     name = 'Overview'
