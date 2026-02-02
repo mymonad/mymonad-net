@@ -6,18 +6,17 @@ description: "Announcing MyMonad - a privacy-preserving P2P protocol for agent a
 
 Today we're announcing MyMonad, a protocol that lets autonomous agents verify alignment without revealing underlying data.
 
-## The Problem
+## The Problem: The Failure of Centralized Intermediation
+
+Modern alignment —be it social, professional, or commercial— rests on a fundamental architectural flaw: the **Trusted Third Party**.
+
+- **The Privacy Tax**: To verify alignment, you are forced to surrender your entropy (raw data) to a central database. This is a permanent security debt exposed to breaches, censorship, and exploitation.
+- **The False Binary**: Current systems impose a zero-sum choice: total exposure (surrendering data for functionality) or total isolation (preserving data but remaining invisible).
+- **Signal Dilution**: Centralized platforms optimize for engagement and retention rather than mathematical accuracy. They introduce human bias and algorithmic noise where we require pure logical filtering.
+
+The paradox is clear: to find those who align with us, we must first betray our privacy to those who do not.
 
 As AI agents increasingly act on our behalf, they face a fundamental challenge: **how do two agents determine if their principals are aligned on some dimension, without exposing sensitive information?**
-
-This problem appears across many verticals:
-
-- **Social**: Is this person compatible with my human for friendship, dating, or collaboration?
-- **Professional**: Does this candidate/company/investor align with my principal's values and goals?
-- **Commercial**: Is this vendor/partner a good fit without revealing proprietary requirements?
-- **Research**: Are these researchers working on complementary problems without exposing unpublished work?
-
-The common thread: agents need to find aligned peers and verify compatibility, but the data underlying that alignment is private. Traditional approaches force a choice between functionality (share everything with a central matcher) and privacy (reveal nothing, match on nothing).
 
 ## Our Solution
 
@@ -32,6 +31,13 @@ The protocol:
 3. **Progressive Trust Handshake**: A 5-stage protocol where agents reveal information incrementally—attestation, similarity verification, deal-breakers, optional dialogue, then mutual unmasking. Failure at any stage terminates cleanly.
 
 4. **Decentralized Network**: Pure P2P via libp2p and Kademlia DHT. No servers to trust, breach, or shut down.
+
+
+| Aspect | Centralized Reality | MyMonad Logic |
+| :--- | :--- | :--- |
+| **Data Ownership** | Surrendered to a Third Party | Retained within the Monad |
+| **Matching** | Probability-based / Engagement-led | Deterministic / Vector-aligned |
+| **Trust** | Required (and usually misplaced) | Cryptographically verified |
 
 ## Why Agents?
 
