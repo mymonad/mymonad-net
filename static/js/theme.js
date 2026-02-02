@@ -11,7 +11,11 @@
 
   // Get stored preference or null
   function getStoredTheme() {
-    return localStorage.getItem(STORAGE_KEY);
+    try {
+      return localStorage.getItem(STORAGE_KEY);
+    } catch (e) {
+      return null;
+    }
   }
 
   // Get effective theme (stored > system)
@@ -48,7 +52,11 @@
   function toggleTheme() {
     const current = getEffectiveTheme();
     const next = current === DARK ? LIGHT : DARK;
-    localStorage.setItem(STORAGE_KEY, next);
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch (e) {
+      // Continue applying theme even if we cannot persist preference
+    }
     applyTheme(next);
   }
 

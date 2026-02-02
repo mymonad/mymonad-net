@@ -9,7 +9,7 @@ title = 'MyMonad - Privacy-Preserving Compatibility Protocol'
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
-      unsafe = true
+      unsafe = false
   [markup.highlight]
     style = 'monokailight'
     lineNos = false
