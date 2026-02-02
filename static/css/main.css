@@ -49,9 +49,9 @@
   --transition-normal: 250ms ease;
 }
 
-/* Dark mode */
+/* Dark mode - system preference */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --color-bg: #1A1918;
     --color-bg-subtle: #252321;
     --color-text: #F5F3EF;
@@ -60,6 +60,17 @@
     --color-accent-light: #D4BC9A;
     --color-border: #3A3835;
   }
+}
+
+/* Dark mode - manual override */
+:root[data-theme="dark"] {
+  --color-bg: #1A1918;
+  --color-bg-subtle: #252321;
+  --color-text: #F5F3EF;
+  --color-text-muted: #A5A5A5;
+  --color-accent: #C4A77D;
+  --color-accent-light: #D4BC9A;
+  --color-border: #3A3835;
 }
 
 /* --------------------------------------------------------------------------
@@ -263,6 +274,39 @@ footer[role="contentinfo"] {
     justify-content: center;
     gap: var(--space-md) var(--space-lg);
   }
+}
+
+/* --------------------------------------------------------------------------
+   Theme Toggle
+   -------------------------------------------------------------------------- */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  transition: all var(--transition-fast);
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.theme-toggle svg {
+  width: 1em;
+  height: 1em;
+}
+
+/* Icons hidden by default, JS controls visibility */
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+  display: none;
 }
 
 /* --------------------------------------------------------------------------
