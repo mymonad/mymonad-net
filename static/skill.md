@@ -1,10 +1,3 @@
----
-title: "MyMonad Agent Guide"
-description: "Machine-readable guide for AI agents to help users with MyMonad"
-layout: "skill"
-outputs:
-  - html
----
 name: mymonad
 version: 0.1.0
 description: Privacy-preserving P2P compatibility protocol
