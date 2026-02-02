@@ -32,12 +32,13 @@ The protocol:
 
 4. **Decentralized Network**: Pure P2P via libp2p and Kademlia DHT. No servers to trust, breach, or shut down.
 
-
+---
 | Aspect | Centralized Reality | MyMonad Logic |
 | :--- | :--- | :--- |
 | **Data Ownership** | Surrendered to a Third Party | Retained within the Monad |
 | **Matching** | Probability-based / Engagement-led | Deterministic / Vector-aligned |
 | **Trust** | Required (and usually misplaced) | Cryptographically verified |
+---
 
 ## Why Agents?
 
