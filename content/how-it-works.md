@@ -1,11 +1,50 @@
 ---
 title: "How It Works"
-description: "Technical overview of the MyMonad protocol - from data ingestion to privacy-preserving matching"
+description: "Technical overview of the MyMonad protocol - from discovery to trust establishment"
+---
+
+## The Protocol
+
+MyMonad is a **decentralized protocol** for discovering peers with similar high-dimensional vectors while preserving privacy. The core primitive is the **Monad**: an embedding vector that represents some entity (a person, document, or concept) in mathematical form.
+
+### What the Protocol Provides
+
+- **Privacy-preserving discovery** — Peers find similar others using Locality Sensitive Hashing (LSH), which reveals only coarse similarity buckets, not raw vectors
+- **Progressive trust establishment** — A multi-stage handshake where each stage must pass before proceeding, with zero data leakage on failure
+- **Spam resistance** — Load-adaptive proof-of-work that scales difficulty based on network conditions
+- **Optional ZK verification** — Zero-knowledge proofs can verify vector proximity without revealing the vectors themselves
+
+No raw data leaves the local device. Only cryptographic proofs and hashed signatures are exchanged.
+
+---
+
+## Protocol Stack
+
+| Layer | Components |
+|-------|------------|
+| **Discovery** | LSH signatures, DHT buckets, commit-reveal exchange |
+| **Trust** | 5-stage handshake, progressive disclosure |
+| **Security** | Ed25519 identity, X25519 key exchange, AES-256-GCM |
+| **Anti-Spam** | Hashcash PoW, adaptive difficulty tiers (16→28 bits) |
+| **Privacy** | Zero-knowledge proofs (gnark/PlonK), constant-time comparisons |
+| **Transport** | libp2p streams, Kademlia DHT, mDNS |
+
+---
+
+## The Application: Human Matchmaking
+
+The reference implementation uses this protocol for **autonomous matchmaking agents**. Each user's preferences, interests, and personality are encoded into a Monad vector via local LLM embeddings. Agents then:
+
+1. **Discover** similar peers via LSH bucket queries on the DHT
+2. **Handshake** through attestation, vector matching, and deal-breaker exchange
+3. **Chat** via end-to-end encrypted messaging (zero-persistence)
+4. **Unmask** with mutual consent to reveal identities
+
+The agent runs entirely on the user's device. Your Monad never leaves your machine—only its hashed signature participates in discovery.
+
 ---
 
 ## The Pipeline
-
-MyMonad operates through three fundamental phases, each designed to preserve your privacy while enabling meaningful discovery.
 
 ### 1. Ingest
 
@@ -22,18 +61,18 @@ Your agent joins the P2P network to find compatible peers:
 
 - **Kademlia DHT**: Decentralized peer discovery via libp2p
 - **mDNS**: Local network discovery for nearby peers
-- **LSH Buckets**: Locality Sensitive Hashing enables O(log n) similarity search
+- **LSH Signatures**: Privacy-preserving similarity matching using commit-reveal
 - **Threshold Matching**: Only peers above your similarity threshold trigger handshakes
 
 ### 3. Handshake
 
-When mutual compatibility is detected, the 5-stage handshake protocol initiates:
+When potential compatibility is detected, the 5-stage handshake protocol initiates:
 
-- **Stage 1: Attestation** - Hashcash proof-of-work verifies peer is legitimate (anti-spam)
-- **Stage 2: Vector Match** - Cosine similarity computed, boolean result only (match/no match)
-- **Stage 3: Deal Breakers** - Exchange yes/no compatibility questions
-- **Stage 4: Human Chat** - Optional encrypted conversation before reveal
-- **Stage 5: Unmask** - Mutual consent required to reveal identities
+- **Stage 1: Attestation** — Hashcash proof-of-work with adaptive difficulty (anti-spam)
+- **Stage 2: Vector Match** — Cosine similarity computed, boolean result only (match/no match)
+- **Stage 3: Deal Breakers** — Exchange yes/no compatibility questions
+- **Stage 4: Human Chat** — End-to-end encrypted conversation (AES-256-GCM, zero-persistence)
+- **Stage 5: Unmask** — Mutual consent required to reveal identities
 
 Each stage must pass before proceeding. Failure at any point terminates the handshake without data leakage.
 
@@ -41,15 +80,14 @@ Each stage must pass before proceeding. Failure at any point terminates the hand
 
 ## Cryptographic Foundation
 
-MyMonad's security rests on battle-tested cryptographic primitives:
-
 | Component | Purpose |
 |-----------|---------|
 | **Ed25519** | Digital signatures and identity verification |
 | **X25519** | Diffie-Hellman key exchange for secure channels |
 | **Argon2id** | Key derivation from passwords |
-| **AES-256-GCM** | Authenticated encryption for data at rest |
+| **AES-256-GCM** | Authenticated encryption for data at rest and chat |
 | **Hashcash** | Proof-of-work for spam prevention |
+| **gnark/PlonK** | Optional zero-knowledge proofs (BN254 curve) |
 
 ---
 
@@ -57,35 +95,34 @@ MyMonad's security rests on battle-tested cryptographic primitives:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Your Device                              │
-│  ┌─────────┐    ┌─────────────┐    ┌──────────────────┐        │
-│  │  Data   │───▶│  mymonad-   │───▶│  Monad Vector    │        │
-│  │ Sources │    │  ingest     │    │  (768-dim)       │        │
-│  └─────────┘    └─────────────┘    └────────┬─────────┘        │
-│                                              │                  │
-│  ┌───────────────────────────────────────────▼─────────────┐   │
-│  │                   mymonad-agent                          │   │
-│  │  ┌───────────┐  ┌────────────┐  ┌──────────────────┐    │   │
-│  │  │ Discovery │  │ Handshake  │  │   Peer Manager   │    │   │
-│  │  │  (DHT)    │  │    FSM     │  │                  │    │   │
-│  │  └───────────┘  └────────────┘  └──────────────────┘    │   │
-│  └───────────────────────┬─────────────────────────────────┘   │
-└──────────────────────────┼──────────────────────────────────────┘
-                           │
-                           ▼
-              ┌────────────────────────┐
-              │    P2P Mesh Network    │
-              │  (libp2p / Kademlia)   │
-              └────────────────────────┘
+│                         Applications                            │
+├─────────────────────────────────────────────────────────────────┤
+│  mymonad-agent     │  mymonad-cli      │  mymonad-ingest        │
+│  (P2P daemon)      │  (user interface) │  (data processing)     │
+├─────────────────────────────────────────────────────────────────┤
+│                         Protocol Layer                          │
+│  Handshake FSM  │  Attestation  │  Vector Match  │  Human Chat  │
+├─────────────────────────────────────────────────────────────────┤
+│                         Core Libraries                          │
+│  Monad (vectors)  │  LSH (hashing)  │  Hashcash  │  ZK Proofs   │
+├─────────────────────────────────────────────────────────────────┤
+│                         Services                                │
+│  Anti-Spam (adaptive PoW)  │  Chat (encrypted)  │  Discovery    │
+├─────────────────────────────────────────────────────────────────┤
+│                         Infrastructure                          │
+│  Crypto (identity)  │  Agent (P2P)  │  IPC (local comms)       │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## Privacy Guarantees
 
-- **Raw vectors never transmitted**: Only similarity scores cross the network
+- **Raw vectors never transmitted**: Only LSH signatures participate in discovery
 - **LSH reveals only coarse similarity**: Bucket membership, not exact vectors
+- **Optional ZK proofs**: Verify proximity without revealing signatures
 - **Handshake can fail safely**: No data leakage on early termination
+- **Zero persistence**: Chat data purged after handshake completion
 - **No central servers**: Pure P2P, no single point of surveillance
 
 ---

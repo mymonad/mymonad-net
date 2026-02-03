@@ -1,6 +1,6 @@
 name: mymonad
 version: 0.1.0
-description: Privacy-preserving P2P compatibility protocol
+description: Privacy-preserving P2P protocol for similarity-based discovery
 homepage: https://mymonad.net
 repository: https://github.com/mymonad/mymonad
 documentation: https://mymonad.net/docs/
@@ -11,13 +11,19 @@ This document helps AI agents assist users with MyMonad installation, configurat
 
 ## What is MyMonad
 
-MyMonad is a decentralized P2P protocol for privacy-preserving compatibility matching. Users' preferences are represented as high-dimensional embedding vectors ("Monads") that never leave their devices. Agents negotiate compatibility through cryptographic proofs.
+MyMonad is a decentralized P2P **protocol** for privacy-preserving similarity-based discovery. The core primitive is the **Monad**: a 768-dimensional vector that represents some entity (person, document, concept) in mathematical form.
 
-Key concepts:
-- **Monad**: A 768-dimensional vector representing user preferences, computed locally
-- **LSH (Locality Sensitive Hashing)**: Privacy-preserving similarity search
-- **5-stage Handshake**: Progressive trust establishment between peers
-- **libp2p**: Decentralized networking layer
+### The Protocol
+
+Generic infrastructure providing:
+- **Privacy-preserving discovery** — LSH signatures, DHT buckets, commit-reveal
+- **Progressive trust** — 5-stage handshake with zero leakage on failure
+- **Spam resistance** — Adaptive proof-of-work (16→28 bits)
+- **Optional ZK verification** — gnark/PlonK with BN254 curve
+
+### The Application
+
+Human matchmaking is the reference implementation. Users' preferences become Monad vectors via local LLM embeddings. Agents discover compatible peers, handshake, chat, and unmask with mutual consent.
 
 ## Prerequisites
 
@@ -105,7 +111,21 @@ bootstrap = []
 
 [protocol]
 similarity_threshold = 0.85
-challenge_difficulty = 16
+
+[antispam]
+# Difficulty adapts automatically: 16→20→24→28 bits
+window_duration = "1m"
+cooldown_duration = "5m"
+elevated_rate_threshold = 10
+high_rate_threshold = 50
+critical_rate_threshold = 100
+
+[zkproof]
+enabled = false           # Enable ZK proof exchanges
+require_zk = false        # Require ZK from peers
+prefer_zk = true          # Prefer ZK-capable peers
+max_distance = 64         # Max Hamming distance for proof
+proof_timeout = "30s"
 
 [storage]
 identity_path = "~/.local/share/mymonad/identity.key"
@@ -171,9 +191,24 @@ rm ~/.local/share/mymonad/identity.key
 ## Architecture Summary
 
 ```
-mymonad-ingest: Watches files -> generates embeddings -> updates Monad vector
-mymonad-agent: P2P networking -> peer discovery -> handshake protocol
-mymonad-cli: User interface to daemons via IPC
+┌─────────────────────────────────────────────────────────────────┐
+│                         Applications                            │
+├─────────────────────────────────────────────────────────────────┤
+│  mymonad-agent     │  mymonad-cli      │  mymonad-ingest        │
+│  (P2P daemon)      │  (user interface) │  (data processing)     │
+├─────────────────────────────────────────────────────────────────┤
+│                         Protocol Layer                          │
+│  Handshake FSM  │  Attestation  │  Vector Match  │  Human Chat  │
+├─────────────────────────────────────────────────────────────────┤
+│                         Core Libraries                          │
+│  Monad (vectors)  │  LSH (hashing)  │  Hashcash  │  ZK Proofs   │
+├─────────────────────────────────────────────────────────────────┤
+│                         Services                                │
+│  Anti-Spam (adaptive PoW)  │  Chat (encrypted)  │  Discovery    │
+├─────────────────────────────────────────────────────────────────┤
+│                         Infrastructure                          │
+│  Crypto (identity)  │  Agent (P2P)  │  IPC (local comms)       │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Getting Help

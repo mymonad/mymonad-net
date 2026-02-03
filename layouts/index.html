@@ -1,8 +1,8 @@
 {{ define "main" }}
 <article class="home">
   <section class="hero" aria-labelledby="hero-title">
-    <h1 id="hero-title" class="hero-title">Discover compatibility.<br>Reveal nothing.</h1>
-    <p class="hero-subtitle">A privacy-preserving P2P protocol where autonomous agents negotiate human compatibility through cryptographic proofs—without exposing raw personal data.</p>
+    <h1 id="hero-title" class="hero-title">Discover similarity.<br>Reveal nothing.</h1>
+    <p class="hero-subtitle">A decentralized protocol for privacy-preserving similarity-based discovery. Agents find compatible peers through cryptographic proofs—without exposing raw data.</p>
     <div class="hero-cta">
       <a href="{{ "/get-started/" | relURL }}" class="btn btn-primary">Get Started</a>
       <a href="{{ "/docs/" | relURL }}" class="btn btn-secondary">Read the Docs</a>
@@ -12,35 +12,47 @@
   <section class="pillars" aria-labelledby="pillars-title">
     <h2 id="pillars-title" class="sr-only">Core Principles</h2>
     <div class="pillar">
-      <h3>Your data stays yours</h3>
-      <p>Vectors computed locally, never transmitted raw. Your essence is a mathematical representation that never leaves your device.</p>
+      <h3>The Protocol</h3>
+      <p>A decentralized infrastructure for discovering peers with similar high-dimensional vectors. Privacy-preserving discovery via LSH, progressive trust handshakes, and optional zero-knowledge proofs.</p>
     </div>
     <div class="pillar">
-      <h3>No central authority</h3>
-      <p>Pure P2P networking via libp2p and Kademlia DHT. No servers to trust, breach, or shut down.</p>
+      <h3>The Application</h3>
+      <p>Human matchmaking is the reference implementation. Your preferences become a Monad vector. Agents negotiate compatibility autonomously. Identity revealed only with mutual consent.</p>
     </div>
     <div class="pillar">
-      <h3>Build anything</h3>
-      <p>A protocol for dating, professional networking, community matching—whatever you imagine. The infrastructure is open.</p>
+      <h3>Build Your Own</h3>
+      <p>The protocol is domain-agnostic. Dating, professional networking, research collaboration—whatever your vertical. The cryptographic primitives are yours to use.</p>
     </div>
   </section>
 
-  <section class="how-it-works-preview" aria-labelledby="how-preview-title">
-    <h2 id="how-preview-title">How It Works</h2>
-    <ol class="steps">
-      <li>
-        <span class="step-name">Ingest</span>
-        <span class="step-desc">Your documents become a high-dimensional affinity vector via local AI</span>
-      </li>
-      <li>
-        <span class="step-name">Match</span>
-        <span class="step-desc">Agents discover compatible peers using Locality Sensitive Hashing</span>
-      </li>
-      <li>
-        <span class="step-name">Connect</span>
-        <span class="step-desc">5-stage handshake with progressive trust—reveal identity only with mutual consent</span>
-      </li>
-    </ol>
+  <section class="protocol-stack" aria-labelledby="stack-title">
+    <h2 id="stack-title">Protocol Stack</h2>
+    <div class="stack-layers">
+      <div class="stack-layer">
+        <span class="layer-name">Discovery</span>
+        <span class="layer-desc">LSH signatures, DHT buckets, commit-reveal exchange</span>
+      </div>
+      <div class="stack-layer">
+        <span class="layer-name">Trust</span>
+        <span class="layer-desc">5-stage handshake, progressive disclosure</span>
+      </div>
+      <div class="stack-layer">
+        <span class="layer-name">Security</span>
+        <span class="layer-desc">Ed25519 identity, X25519 key exchange, AES-256-GCM</span>
+      </div>
+      <div class="stack-layer">
+        <span class="layer-name">Anti-Spam</span>
+        <span class="layer-desc">Hashcash PoW, adaptive difficulty (16→28 bits)</span>
+      </div>
+      <div class="stack-layer">
+        <span class="layer-name">Privacy</span>
+        <span class="layer-desc">Zero-knowledge proofs (gnark/PlonK), constant-time comparisons</span>
+      </div>
+      <div class="stack-layer">
+        <span class="layer-name">Transport</span>
+        <span class="layer-desc">libp2p streams, Kademlia DHT, mDNS</span>
+      </div>
+    </div>
     <a href="{{ "/how-it-works/" | relURL }}" class="learn-more">Learn more about the protocol</a>
   </section>
 

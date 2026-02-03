@@ -1,6 +1,6 @@
 ---
 title: "MyMonad"
-description: "Privacy-preserving P2P compatibility protocol"
+description: "Privacy-preserving P2P protocol for similarity-based discovery"
 ---
 
-Discover compatibility. Reveal nothing.
+Discover similarity. Reveal nothing.

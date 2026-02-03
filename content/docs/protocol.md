@@ -20,10 +20,17 @@ Two agents that discover potential compatibility (via LSH bucket matching) initi
 3. Responder sends `AttestationResponse` with proof
 4. Initiator verifies proof meets difficulty threshold
 
-**Anti-spam:**
-- Configurable difficulty (default: 16 bits)
-- Prevents mass connection attempts
-- No personal data exchanged
+**Adaptive Anti-Spam:**
+- Load-adaptive difficulty tiers: 16 → 20 → 24 → 28 bits
+- Difficulty scales based on incoming request rate per sliding window
+- Automatic de-escalation after cooldown period
+- Prevents mass connection attempts while remaining accessible under normal load
+
+**Thresholds (configurable):**
+- Base: 16 bits
+- Elevated: 20 bits (>10 requests/window)
+- High: 24 bits (>50 requests/window)
+- Critical: 28 bits (>100 requests/window)
 
 ## Stage 2: Vector Match
 
@@ -37,8 +44,14 @@ Two agents that discover potential compatibility (via LSH bucket matching) initi
 
 **Privacy:**
 - Vectors exchanged only after attestation passes
-- Threshold t configurable (default: 0.85)
+- Threshold τ configurable (default: 0.85)
 - Failed matches reveal nothing about why
+
+**Optional ZK Enhancement:**
+- Zero-knowledge proofs can verify LSH signature proximity without revealing actual signatures
+- Uses gnark/PlonK circuits with BN254 curve
+- Verifies Hamming distance ≤ max_distance (default: 64)
+- Configurable via `[zkproof]` section
 
 ## Stage 3: Deal Breakers
 
@@ -57,12 +70,19 @@ Two agents that discover potential compatibility (via LSH bucket matching) initi
 
 ## Stage 4: Human Chat
 
-**Purpose:** Optional direct conversation before unmasking.
+**Purpose:** Direct conversation before unmasking.
 
 **Protocol:**
-1. End-to-end encrypted messaging via X25519 key exchange
-2. No identity revealed
-3. Either party can proceed to unmask or terminate
+1. Derive shared secret via X25519 Diffie-Hellman
+2. Use HKDF to derive AES-256-GCM encryption key
+3. End-to-end encrypted messaging
+4. Zero-persistence: messages not stored after handshake
+5. Either party can proceed to unmask or terminate
+
+**Security:**
+- Each message has unique nonce
+- Authentication tag prevents tampering
+- Conversation data purged on handshake completion
 
 ## Stage 5: Unmask
 
@@ -116,7 +136,7 @@ challenge = SHA256(nonce || peer_id || timestamp)
 proof = find_nonce where SHA256(challenge || proof) has N leading zeros
 ```
 
-Default difficulty: 16 bits (adjustable via config)
+Difficulty N determined by adaptive anti-spam controller.
 
 ### Vector Exchange
 
@@ -124,4 +144,41 @@ Vectors are serialized as little-endian float32 arrays and transmitted after att
 
 ### Key Exchange (Stage 4+)
 
-X25519 ephemeral keys generated per handshake. Shared secret derived via Diffie-Hellman, then used with AES-256-GCM for message encryption.
+X25519 ephemeral keys generated per handshake. Shared secret derived via Diffie-Hellman, then HKDF produces encryption key for AES-256-GCM.
+
+### Zero-Knowledge Proofs (Optional)
+
+When enabled, peers can prove their LSH signatures are within a certain Hamming distance without revealing the signatures:
+
+```
+Circuit: HammingDistanceCircuit
+- Public inputs: claimed distance, threshold
+- Private inputs: signature A, signature B
+- Constraint: HammingDistance(A, B) ≤ threshold
+```
+
+Uses gnark library with PlonK proving system and BN254 elliptic curve.
+
+## Configuration
+
+### Anti-Spam (`[antispam]`)
+
+```toml
+[antispam]
+window_duration = "1m"
+cooldown_duration = "5m"
+elevated_rate_threshold = 10
+high_rate_threshold = 50
+critical_rate_threshold = 100
+```
+
+### ZK Proofs (`[zkproof]`)
+
+```toml
+[zkproof]
+enabled = false
+require_zk = false
+prefer_zk = true
+max_distance = 64
+proof_timeout = "30s"
+```
