@@ -20,6 +20,9 @@ title = 'MyMonad - Privacy-Preserving Compatibility Protocol'
   section = ['HTML']
   page = ['HTML']
 
+[minify]
+  disableXML = true
+
 [sitemap]
   changefreq = 'weekly'
   priority = 0.5
