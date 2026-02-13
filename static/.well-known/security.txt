@@ -1,5 +1,6 @@
 # Security policy for mymonad.net
 # https://securitytxt.org/ (RFC 9116)
+# NOTE: Expires field must be updated annually (next renewal: before 2027-02-13)
 
 Contact: https://github.com/mymonad/mymonad/security/advisories
 Preferred-Languages: en
