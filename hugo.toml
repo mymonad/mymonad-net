@@ -1,6 +1,7 @@
 baseURL = 'https://mymonad.net/'
 languageCode = 'en-us'
 title = 'MyMonad - Privacy-Preserving Compatibility Protocol'
+disableHugoGeneratorInject = true
 
 [params]
   description = 'Decentralized P2P matchmaking protocol for autonomous agents. Discover compatibility without revealing anything.'
