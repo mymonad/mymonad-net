@@ -92,7 +92,7 @@ extensions = [".txt", ".md"]
 ignore_hidden = true
 
 [ollama]
-url = "http://localhost:11434"
+url = "http://<ollama-host>:11434"
 model = "nomic-embed-text"
 timeout_seconds = 30
 
